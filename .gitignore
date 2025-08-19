@@ -1,0 +1,23 @@
+# Maven build klasörü
+/target/
+
+# IDE klasörleri ve ayar dosyaları
+/.idea/
+/.vscode/
+/.settings/
+/bin/
+/out/
+
+# IntelliJ IDEA
+*.iml
+
+# Mac ve Windows sistem dosyaları
+.DS_Store
+Thumbs.db
+
+# Log dosyaları
+*.log
+
+# Raporlar (manuel eklemek istemezsen)
+cucumber-report.html
+cucumber.json
