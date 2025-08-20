@@ -179,21 +179,35 @@ public class HomePage extends BasePage {
         // Try to find search input with multiple selectors
         WebElement inputToUse = findSearchInput();
         if (inputToUse != null) {
-            // Click on search input first
-            clickElement(inputToUse);
-            
-            // Wait a bit for input to be ready
             try {
+                // Click on search input first
+                clickElement(inputToUse);
+                
+                // Wait a bit for input to be ready
                 Thread.sleep(1000);
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
+                
+                // Clear any existing text
+                inputToUse.clear();
+                
+                // Ensure input is focused
+                inputToUse.click();
+                Thread.sleep(500);
+                
+                // Type the product name
+                sendKeys(inputToUse, productName);
+                
+                // Wait a bit for suggestions to appear
+                Thread.sleep(1000);
+                
+                // Press Enter key to search
+                inputToUse.sendKeys(org.openqa.selenium.Keys.ENTER);
+                
+                System.out.println("Successfully searched for: " + productName);
+                
+            } catch (Exception e) {
+                System.out.println("Error during search: " + e.getMessage());
+                throw new RuntimeException("Search failed for: " + productName);
             }
-            
-            // Clear and type the product name
-            sendKeys(inputToUse, productName);
-            
-            // Press Enter key to search
-            inputToUse.sendKeys(org.openqa.selenium.Keys.ENTER);
         } else {
             throw new RuntimeException("Search input not found on page");
         }

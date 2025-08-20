@@ -35,6 +35,12 @@ Feature: Trendyol Shopping Functionality
     When I add multiple products to cart
     Then total price should match sum of individual product prices
 
+  @cart_validation_parametric
+  Scenario: Add different products to cart
+    When I search for "kablosuz kulaklik"
+    And I add 3 different products to cart
+    Then total price should match sum of individual product prices
+
   @remove_from_cart
   Scenario: Remove item from cart
     When I remove an item from cart
