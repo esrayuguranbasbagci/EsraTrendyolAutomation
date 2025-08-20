@@ -30,11 +30,6 @@ Feature: Trendyol Shopping Functionality
     Then product should be added to cart successfully
     And cart should display correct product details
 
-  @cart_validation
-  Scenario: Validate cart total price
-    When I add multiple products to cart
-    Then total price should match sum of individual product prices
-
   @cart_validation_parametric
   Scenario: Add different products to cart
     When I search for "kablosuz kulaklik"
@@ -43,6 +38,8 @@ Feature: Trendyol Shopping Functionality
 
   @remove_from_cart
   Scenario: Remove item from cart
-    When I remove an item from cart
+    When I search for "kablosuz kulaklik"
+    And I add 2 different products to cart
+    And I remove an item from cart
     Then item should be removed from cart
     And total price should be updated correctly

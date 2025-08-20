@@ -49,6 +49,10 @@ public class CartPage extends BasePage {
     @FindBy(css = "button.remove-item, .pb-remove")
     private List<WebElement> removeButtons;
 
+    // Remove button with specific aria-label
+    @FindBy(css = "button[aria-label='Ürünü sepetten çıkartma'], button.checkout-saving-remove-button")
+    private List<WebElement> removeItemButtons;
+
     // Empty cart message
     @FindBy(css = "div.empty-cart, .pb-empty")
     private WebElement emptyCartMessage;
@@ -323,11 +327,24 @@ public class CartPage extends BasePage {
 
     public void removeItemFromCart(int index) {
         try {
-            if (index < removeButtons.size()) {
-                removeButtons.get(index).click();
-                System.out.println("Removed item at index " + index);
+            if (index >= 0 && index < removeItemButtons.size()) {
+                WebElement removeButton = removeItemButtons.get(index);
+                
+                // Get item details before removal for verification
+                String itemName = getCartItemName(index);
+                String itemPrice = getCartItemPrice(index);
+                System.out.println("Removing item " + index + ": " + itemName + " (" + itemPrice + ")");
+                
+                // Click remove button
+                removeButton.click();
+                System.out.println("Remove button clicked for item " + index);
+                
                 // Wait for removal to complete
                 Thread.sleep(2000);
+                
+                System.out.println("Item " + index + " removed successfully");
+            } else {
+                System.out.println("Invalid remove button index: " + index + ". Available buttons: " + removeItemButtons.size());
             }
         } catch (Exception e) {
             System.out.println("Error removing item from cart: " + e.getMessage());

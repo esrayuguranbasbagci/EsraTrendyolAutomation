@@ -12,8 +12,7 @@ import org.junit.runner.RunWith;
         "pretty",
         "html:target/cucumber-reports/cucumber-pretty.html",
         "json:target/cucumber-reports/CucumberTestReport.json"
-    },
-    tags = "@cart_validation_parametric"
+    }
 )
 public class TestRunner {
 }
