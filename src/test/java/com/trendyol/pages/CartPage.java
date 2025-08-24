@@ -13,7 +13,8 @@ public class CartPage extends BasePage {
     @FindBy(css = "div.pb-header")
     private WebElement cartHeader;
 
-    @FindBy(css = "div[class*='basket-item'], div[class*='cart-item'], div[class*='product'], div[class*='item']")
+    // Updated selector based on actual Trendyol HTML structure - SEPET SAYFASINDA
+    @FindBy(css = "p.pb-item")
     private List<WebElement> cartItemNames;
 
     @FindBy(css = "input.counter-content")
@@ -25,6 +26,19 @@ public class CartPage extends BasePage {
     // Total price - multiple selectors for robustness
     @FindBy(css = "div.total-price, .pb-total, div[class*='total'], div[class*='pb-total'], span[class*='total'], .cart-total")
     private WebElement totalPrice;
+
+    // Updated price elements based on actual Trendyol HTML
+    @FindBy(css = "div.pb-summary-total-price")
+    private WebElement finalTotalPriceElement;
+
+    @FindBy(css = "li span:contains('Ürünün Toplamı') + strong")
+    private WebElement productsTotalElement;
+
+    @FindBy(css = "li span:contains('Kargo Toplam') + strong")
+    private WebElement shippingTotalElement;
+
+    @FindBy(css = "div.total-saving")
+    private WebElement totalSavingElement;
 
     // Detailed price breakdown elements
     @FindBy(css = "div.pb-basket-item-price")
@@ -174,10 +188,10 @@ public class CartPage extends BasePage {
         }
     }
 
-    // Get detailed price breakdown
+    // Get detailed price breakdown - Updated with actual Trendyol HTML
     public double getProductsTotal() {
         try {
-            // Try to find "Ürünün Toplamı" element
+            // Try to find "Ürünün Toplamı" element using the actual HTML structure
             List<WebElement> allLiElements = driver.findElements(By.cssSelector("li"));
             for (WebElement li : allLiElements) {
                 String text = li.getText();
@@ -247,9 +261,34 @@ public class CartPage extends BasePage {
         }
     }
 
+    // New method to get total savings from the actual Trendyol HTML
+    public double getTotalSavings() {
+        try {
+            // Try to find total savings element
+            WebElement savingsElement = driver.findElement(By.cssSelector("div.total-saving"));
+            if (savingsElement.isDisplayed()) {
+                // Look for the price span inside total-saving
+                WebElement priceSpan = savingsElement.findElement(By.cssSelector("div.total-saving-price span"));
+                if (priceSpan != null) {
+                    String savingsText = priceSpan.getText().trim();
+                    // Remove the minus sign and "TL", then parse
+                    String numericSavings = savingsText.replaceAll("[^0-9.,]", "").replace(",", ".");
+                    double savings = Double.parseDouble(numericSavings);
+                    System.out.println("Total savings found: " + savings + " TL");
+                    return savings;
+                }
+            }
+            System.out.println("Total savings element not found");
+            return 0.0;
+        } catch (Exception e) {
+            System.out.println("Error getting total savings: " + e.getMessage());
+            return 0.0;
+        }
+    }
+
     public double getFinalTotal() {
         try {
-            // Try to find final total price
+            // Try to find final total price using the actual Trendyol HTML structure
             WebElement totalElement = driver.findElement(By.cssSelector("div.pb-summary-total-price"));
             if (totalElement.isDisplayed()) {
                 String title = totalElement.getAttribute("title");
@@ -268,18 +307,20 @@ public class CartPage extends BasePage {
         }
     }
 
-    // Verify price breakdown
+    // Verify price breakdown - Updated with actual Trendyol HTML structure
     public boolean verifyPriceBreakdown() {
         try {
             double productsTotal = getProductsTotal();
             double shippingTotal = getShippingTotal();
             double shippingDiscount = getShippingDiscount();
             double finalTotal = getFinalTotal();
+            double totalSavings = getTotalSavings();
             
             System.out.println("=== Price Breakdown Verification ===");
             System.out.println("Products Total: " + productsTotal + " TL");
             System.out.println("Shipping Total: " + shippingTotal + " TL");
             System.out.println("Shipping Discount: " + shippingDiscount + " TL");
+            System.out.println("Total Savings: " + totalSavings + " TL");
             System.out.println("Final Total: " + finalTotal + " TL");
             
             // If we can't get some values, use fallback verification
@@ -289,8 +330,9 @@ public class CartPage extends BasePage {
                 return true;
             }
             
-            // Calculate expected final total
-            double expectedFinalTotal = productsTotal + shippingTotal - shippingDiscount;
+            // Calculate expected final total considering savings
+            // Final total should be: Products Total + Shipping - Total Savings
+            double expectedFinalTotal = productsTotal + shippingTotal - totalSavings;
             System.out.println("Expected Final Total: " + expectedFinalTotal + " TL");
             
             boolean match = Math.abs(finalTotal - expectedFinalTotal) < 0.01;
@@ -382,18 +424,18 @@ public class CartPage extends BasePage {
         try {
             System.out.println("Looking for cart item names...");
             
-            // Use the debug-found element directly
-            List<WebElement> allPossibleNames = driver.findElements(By.cssSelector("div[class*='basket-item'], div[class*='cart-item'], div[class*='product'], div[class*='item']"));
-            System.out.println("Found " + allPossibleNames.size() + " possible name elements:");
+            // Use the actual Trendyol HTML structure you found - SEPET SAYFASINDA
+            List<WebElement> cartItemNameElements = driver.findElements(By.cssSelector("p.pb-item"));
+            System.out.println("Found " + cartItemNameElements.size() + " cart item name elements:");
             
             // Look for the element that contains our product name
             WebElement productElement = null;
-            for (int i = 0; i < allPossibleNames.size(); i++) {
+            for (int i = 0; i < cartItemNameElements.size(); i++) {
                 try {
-                    String text = allPossibleNames.get(i).getText().trim();
-                    if (!text.isEmpty() && text.contains("TrkTech")) { // Look for our specific product
+                    String text = cartItemNameElements.get(i).getText().trim();
+                    if (!text.isEmpty()) {
                         System.out.println("Found product element " + i + ": '" + text.substring(0, Math.min(100, text.length())) + "...'");
-                        productElement = allPossibleNames.get(i);
+                        productElement = cartItemNameElements.get(i);
                         break;
                     }
                 } catch (Exception e) {
