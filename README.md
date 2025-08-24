@@ -1,27 +1,32 @@
 # Trendyol Automation Test Project
 
-Bu proje, Trendyol web sitesi için Cucumber, Java ve Extent Reports kullanarak oluşturulmuş test otomasyon projesidir.
+This is a test automation suite I developed for the Trendyol website. We test e-commerce scenarios using the Cucumber BDD framework. We perform web automation with Selenium WebDriver and generate detailed reports with Extent Reports.
 
-## 🎯 Proje Amacı
+## Project Purpose
 
-Trendyol web sitesinin temel alışveriş fonksiyonlarını test etmek:
-- Ürün arama
-- Ürün detaylarını görüntüleme
-- Sepete ürün ekleme
-- Sepet fiyat doğrulama
-- Sepetten ürün çıkarma
+I wanted to test the basic scenarios we might encounter while shopping on Trendyol. That's why I wrote tests covering these functions:
 
-## 🛠️ Teknolojiler
+- **Product Search**: Searching for products like "wireless headphones"
+- **Product Details**: Checking price and stock status on product pages
+- **Add to Cart**: Adding products to cart and verification
+- **Cart Management**: Adding multiple products, price calculation
+- **Remove Products**: Removing products from cart and price updates
 
-- **Java 8+**
-- **Maven** - Dependency Management
-- **Cucumber 7.18.0** - BDD Framework
-- **Selenium WebDriver 4.21.0** - Web Automation
-- **JUnit 4.13.2** - Test Framework
-- **Extent Reports 5.1.1** - Test Reporting
-- **WebDriverManager 5.8.0** - Driver Management
+## Technologies
 
-## 📁 Proje Yapısı
+I used these technologies while developing the project:
+
+- **Java 8+** - Main programming language
+- **Maven** - Dependency management and build tool
+- **Cucumber 7.18.0** - BDD framework (test writing with Gherkin syntax)
+- **Selenium WebDriver 4.21.0** - For web automation
+- **JUnit 4.13.2** - Test framework
+- **Extent Reports 5.1.1** - Detailed test reports
+- **WebDriverManager 5.8.0** - Automatic Chrome driver management
+
+## Project Structure
+
+The project folder structure is organized as follows:
 
 ```
 src/
@@ -29,108 +34,126 @@ src/
 │   ├── java/
 │   │   └── com/
 │   │       └── trendyol/
-│   │           ├── pages/           # Page Object Model
-│   │           ├── steps/           # Cucumber Step Definitions
-│   │           ├── hooks/           # Cucumber Hooks
-│   │           └── TestRunner.java  # Test Runner
+│   │           ├── pages/           # Page Object Model classes
+│   │           │   ├── BasePage.java
+│   │           │   ├── CartPage.java
+│   │           │   ├── SearchResultsPage.java
+│   │           │   └── ProductDetailPage.java
+│   │           ├── steps/           # Cucumber step definitions
+│   │           │   └── TrendyolShoppingSteps.java
+│   │           ├── hooks/           # Cucumber hooks (setup/teardown)
+│   │           └── TestRunner.java  # Main test runner
 │   └── resources/
-│       ├── features/                # Cucumber Feature Files
-│       └── extent.properties        # Extent Reports Configuration
+│       ├── features/                # Cucumber feature files
+│       │   └── trendyol_shopping.feature
+│       └── extent.properties        # Extent Reports configuration
 ```
 
-## 🚀 Kurulum ve Çalıştırma
+## Setup and Execution
 
-### Gereksinimler
-- Java 8 veya üzeri
-- Maven 3.6+
-- Chrome Browser
+### Requirements
+To run the project, you need:
+- Java 8 or higher (I used Java 17)
+- Maven 3.6+ (for dependency management)
+- Chrome Browser (tests run on Chrome)
 
-### 1. Projeyi Klonlayın
+### 1. Clone the Project
 ```bash
 git clone <repository-url>
 cd TrendyolAutomation
 ```
 
-### 2. Bağımlılıkları Yükleyin
+### 2. Install Dependencies
 ```bash
 mvn clean install
 ```
 
-### 3. Testleri Çalıştırın
+### 3. Run Tests
 
-#### Tüm Testleri Çalıştırma
+#### Run All Tests
 ```bash
 mvn test
 ```
 
-#### Belirli Tag ile Test Çalıştırma
+#### Run Tests with Specific Tags
 ```bash
-# Sadece arama testleri
+# Only search tests
 mvn test -Dcucumber.filter.tags="@search"
 
-# Sadece sepet testleri
+# Only cart tests
 mvn test -Dcucumber.filter.tags="@add_to_cart"
 
-# Birden fazla tag
+# Multiple tags
 mvn test -Dcucumber.filter.tags="@search or @add_to_cart"
 ```
 
-#### IDE'den Çalıştırma
-- `TestRunner.java` dosyasını açın
-- Sağ tık yapıp "Run TestRunner" seçin
+#### Run from IDE
+- Open `TestRunner.java` file
+- Right-click and select "Run TestRunner"
 
-## 📊 Test Raporları
+## Test Reports
 
-### Cucumber HTML Raporu
-- Konum: `target/cucumber-reports/cucumber-pretty.html`
-- Cucumber test sonuçlarını gösterir
+After tests run, you get reports in 3 different formats:
 
-### Extent Reports
-- Konum: `target/extent-reports/`
-- Detaylı test raporları
-- Screenshot'lar
-- Test timeline
-- Dashboard
-
-### JSON Raporu
-- Konum: `target/cucumber-reports/CucumberTestReport.json`
-- CI/CD entegrasyonu için
-
-## 🧪 Test Senaryoları
-
-### 1. Arama Fonksiyonu (@search)
-- "kablosuz kulaklik" ürünü için arama yapma
-- Arama sonuçlarının görüntülenmesi
-- Sonuçlarda arama kelimesinin bulunması
-
-### 2. Ürün Detayları (@product_details)
-- Arama sonuçlarından ürün seçme
-- Ürün adı, fiyat ve stok durumunun görüntülenmesi
-
-### 3. Sepete Ekleme (@add_to_cart)
-- Ürünü sepete ekleme
-- Sepette ürün detaylarının doğrulanması
-
-### 4. Sepet Fiyat Doğrulama (@cart_validation)
-- Birden fazla ürün ekleme
-- Toplam fiyatın doğrulanması
-
-### 5. Sepetten Çıkarma (@remove_from_cart)
-- Sepetten ürün çıkarma
-- Toplam fiyatın güncellenmesi
-
-## 🔧 Konfigürasyon
+### Cucumber HTML Report
+- **Location**: `target/cucumber-reports/cucumber-pretty.html`
+- Shows Cucumber test results
+- Step-by-step test flow
 
 ### Extent Reports
-`src/test/resources/extent.properties` dosyasından rapor ayarlarını yapabilirsiniz:
+- **Location**: `target/extent-reports/`
+- Most detailed report format
+- Screenshots, test timeline, dashboard
+- Test logs and error details
+- **Feature**: Extent Reports integration added to all methods in CartPage
 
-- Rapor formatları (HTML, PDF, JSON, XML)
-- Screenshot ayarları
-- Tema ve stil ayarları
-- Sistem bilgileri
+### JSON Report
+- **Location**: `target/cucumber-reports/CucumberTestReport.json`
+- For use in CI/CD pipelines
 
-### Browser Ayarları
-`TrendyolShoppingSteps.java` dosyasından browser ayarlarını değiştirebilirsiniz:
+## Test Scenarios
+
+There are 5 main test scenarios in the project. Each tests different e-commerce functions:
+
+### 1. Search Function (@search)
+- Searching for "wireless headphones" products
+- Displaying search results (24 products found)
+- Finding search keywords in results
+
+### 2. Product Details (@product_details)
+- Selecting products from search results
+- Displaying product name, price and stock status
+- Product page opens in new tab
+
+### 3. Add to Cart (@add_to_cart)
+- Adding products to cart
+- Verifying product details in cart
+- Checking price and product name match
+
+### 4. Cart Price Validation (@cart_validation)
+- Adding multiple products (3 different products)
+- Verifying total price
+- Including shipping costs and discounts
+
+### 5. Remove from Cart (@remove_from_cart)
+- Removing products from cart
+- Updating total price
+- Decreasing cart count
+
+## Configuration
+
+### Extent Reports
+You can configure report settings from `src/test/resources/extent.properties` file:
+
+- Report formats (HTML, PDF, JSON, XML)
+- Screenshot settings
+- Theme and style settings
+- System information
+
+**Important**: Extent Reports log integration has been added to all methods in CartPage.java. Now cart operations are displayed in detail in test reports.
+
+### Browser Settings
+You can change browser settings from `TrendyolShoppingSteps.java` file:
 
 ```java
 @Before
@@ -138,32 +161,38 @@ public void setUp() {
     WebDriverManager.chromedriver().setup();
     driver = new ChromeDriver();
     driver.manage().window().maximize();
-    // Diğer ayarlar...
+    // Other settings...
 }
 ```
 
-## 📝 Test Yazma
+### Element Selectors
+Updated according to Trendyol's actual HTML structure:
+- Cart product names: `p.pb-item`
+- Cart prices: `div.pb-basket-item-price`
+- Total price: `div.pb-summary-total-price`
 
-### Yeni Test Senaryosu Ekleme
+## Test Writing
 
-1. **Feature Dosyası Oluşturma**
+### Adding New Test Scenarios
+
+1. **Create Feature File**
 ```gherkin
 @new_feature
-Scenario: Yeni test senaryosu
-  Given ön koşul
-  When aksiyon
-  Then sonuç
+Scenario: New test scenario
+  Given precondition
+  When action
+  Then result
 ```
 
-2. **Step Definition Ekleme**
+2. **Add Step Definition**
 ```java
-@When("aksiyon")
-public void aksiyon() {
-    // Test kodu
+@When("action")
+public void action() {
+    // Test code
 }
 ```
 
-3. **Page Object Ekleme**
+3. **Add Page Object**
 ```java
 @FindBy(css = "selector")
 private WebElement element;
@@ -173,30 +202,56 @@ public void method() {
 }
 ```
 
-## 🐛 Sorun Giderme
+### Extent Reports Integration
+To add logs to new methods:
 
-### Yaygın Sorunlar
+```java
+// Pass ExtentTest in CartPage constructor
+CartPage cartPage = new CartPage(driver, extentTest);
 
-1. **ChromeDriver Hatası**
-   - Chrome browser'ın güncel olduğundan emin olun
-   - WebDriverManager otomatik olarak uygun driver'ı indirir
+// Use log methods
+logInfo("Info message");
+logPass("Successful operation");
+logFail("Error message");
+logWarning("Warning message");
+```
 
-2. **Element Bulunamadı Hatası**
-   - CSS selector'ları kontrol edin
-   - Sayfa yüklenme sürelerini artırın
-   - Explicit wait kullanın
+## Troubleshooting
 
-3. **Test Fail Hatası**
-   - Screenshot'ları kontrol edin
-   - Extent Reports'ta detayları inceleyin
-   - Console log'ları kontrol edin
+### Common Issues
 
-### Debug Modu
+1. **ChromeDriver Error**
+   - Make sure Chrome browser is up to date
+   - WebDriverManager automatically downloads the appropriate driver
+
+2. **Element Not Found Error**
+   - Check CSS selectors (Trendyol HTML structure may change)
+   - Increase page load times
+   - Use explicit wait
+
+3. **Test Fail Error**
+   - Check screenshots
+   - Check details in Extent Reports
+   - Check console logs
+
+4. **Cart Price Calculation Error**
+   - Discounts and shipping costs may change on Trendyol
+   - Check `getTotalSavings()` method
+   - Price formats should be current
+
+### Debug Mode
 ```bash
 mvn test -Dmaven.surefire.debug
 ```
 
-## 📈 CI/CD Entegrasyonu
+### Element Selector Updates
+If Trendyol HTML structure changes, you may need to update selectors in CartPage.java:
+```java
+@FindBy(css = "new-selector")
+private WebElement element;
+```
+
+## CI/CD Entegrasyonu
 
 ### GitHub Actions
 ```yaml
@@ -241,7 +296,7 @@ pipeline {
 }
 ```
 
-## 🤝 Katkıda Bulunma
+## Katkıda Bulunma
 
 1. Fork yapın
 2. Feature branch oluşturun (`git checkout -b feature/AmazingFeature`)
@@ -249,24 +304,35 @@ pipeline {
 4. Push yapın (`git push origin feature/AmazingFeature`)
 5. Pull Request oluşturun
 
-## 📄 Lisans
+## Lisans
 
 Bu proje MIT lisansı altında lisanslanmıştır.
 
-## 📞 İletişim
+## İletişim
 
 - Proje: [GitHub Repository](https://github.com/username/TrendyolAutomation)
 - Sorular için: [Issues](https://github.com/username/TrendyolAutomation/issues)
 
-## 🔄 Güncellemeler
+## Updates
+
+### v1.1.0 (Current)
+- **Extent Reports Integration**: Log integration added to all methods in CartPage
+- **Element Selector Updates**: Updated according to Trendyol's actual HTML structure
+- **Price Calculation Improvements**: Cart price calculation methods developed
+- **Error Management**: More robust error handling and fallback mechanisms
 
 ### v1.0.0
-- Temel test senaryoları eklendi
-- Page Object Model implementasyonu
-- Extent Reports entegrasyonu
+- Basic test scenarios added
+- Page Object Model implementation
 - Cucumber BDD framework
-- Maven build sistemi
+- Maven build system
 
 ---
 
-**Not:** Bu proje eğitim amaçlı oluşturulmuştur. Gerçek web sitesi testlerinde site sahibinden izin alınması önerilir.
+**Note:** This project was created for educational purposes. Permission from the site owner is recommended for real website testing.
+
+## Final Notes
+
+The most challenging part while developing the project was understanding Trendyol's HTML structure. Especially the element selectors on the cart page keep changing. That's why I used fallback mechanisms and multiple selector strategies.
+
+Extent Reports integration was also quite useful. You can see in detail what happened at each step in test reports. This makes test debugging much easier.

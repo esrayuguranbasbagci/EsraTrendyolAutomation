@@ -4,10 +4,14 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.By;
+import com.aventstack.extentreports.ExtentTest;
+import com.aventstack.extentreports.Status;
 
 import java.util.List;
 
 public class CartPage extends BasePage {
+
+    private ExtentTest extentTest;
 
     // Cart page elements based on actual Trendyol HTML
     @FindBy(css = "div.pb-header")
@@ -75,18 +79,48 @@ public class CartPage extends BasePage {
         super(driver);
     }
 
+    public CartPage(WebDriver driver, ExtentTest extentTest) {
+        super(driver);
+        this.extentTest = extentTest;
+    }
+
+    // Helper method for logging to both console and Extent Reports
+    private void log(String message, Status status) {
+        if (extentTest != null) {
+            extentTest.log(status, message);
+        }
+        System.out.println(message);
+    }
+
+    private void logInfo(String message) {
+        log(message, Status.INFO);
+    }
+
+    private void logPass(String message) {
+        log(message, Status.PASS);
+    }
+
+    private void logFail(String message) {
+        log(message, Status.FAIL);
+    }
+
+    private void logWarning(String message) {
+        log(message, Status.WARNING);
+    }
+
     public void navigateToCart() {
         try {
+            logInfo("Navigating to cart page...");
             driver.get("https://www.trendyol.com/sepetim");
             // Wait for page to load and check if cart container is visible
             Thread.sleep(2000); // Give page time to load
             if (isCartPageDisplayed()) {
-                System.out.println("Successfully navigated to cart page");
+                logPass("Successfully navigated to cart page");
             } else {
-                System.out.println("Cart page loaded but cart container not visible");
+                logWarning("Cart page loaded but cart container not visible");
             }
         } catch (Exception e) {
-            System.out.println("Error navigating to cart page: " + e.getMessage());
+            logFail("Error navigating to cart page: " + e.getMessage());
         }
     }
 
@@ -104,21 +138,29 @@ public class CartPage extends BasePage {
             try {
                 if (cartHeader.isDisplayed()) {
                     String headerText = getText(cartHeader);
-                    System.out.println("Cart header found: " + headerText);
+                    logInfo("Cart header found: " + headerText);
                     headerCheck = true;
                 }
             } catch (Exception e) {
-                System.out.println("Cart header not found: " + e.getMessage());
+                logWarning("Cart header not found: " + e.getMessage());
             }
             
-            System.out.println("Cart page checks - URL: " + urlCheck + ", Title: " + titleCheck + ", Header: " + headerCheck);
+            logInfo("Cart page checks - URL: " + urlCheck + ", Title: " + titleCheck + ", Header: " + headerCheck);
             
             // Return true if at least 2 out of 3 checks pass
             int passedChecks = (urlCheck ? 1 : 0) + (titleCheck ? 1 : 0) + (headerCheck ? 1 : 0);
-            return passedChecks >= 2;
+            boolean result = passedChecks >= 2;
+            
+            if (result) {
+                logPass("Cart page verification successful");
+            } else {
+                logWarning("Cart page verification failed - only " + passedChecks + " out of 3 checks passed");
+            }
+            
+            return result;
             
         } catch (Exception e) {
-            System.out.println("Error checking cart page: " + e.getMessage());
+            logFail("Error checking cart page: " + e.getMessage());
             return false;
         }
     }
@@ -148,7 +190,7 @@ public class CartPage extends BasePage {
             if (totalPrice != null && totalPrice.isDisplayed()) {
                 String price = getText(totalPrice);
                 if (!price.isEmpty()) {
-                    System.out.println("Total price found: " + price);
+                    logInfo("Total price found: " + price);
                     return price;
                 }
             }
@@ -169,7 +211,7 @@ public class CartPage extends BasePage {
                     if (element.isDisplayed()) {
                         String price = element.getText().trim();
                         if (!price.isEmpty() && price.contains("TL")) {
-                            System.out.println("Total price found with selector '" + selector + "': " + price);
+                            logInfo("Total price found with selector '" + selector + "': " + price);
                             return price;
                         }
                     }
@@ -179,11 +221,11 @@ public class CartPage extends BasePage {
             }
             
             // If no total price found, calculate from individual items
-            System.out.println("No total price element found, will calculate from individual items");
+            logWarning("No total price element found, will calculate from individual items");
             return "";
             
         } catch (Exception e) {
-            System.out.println("Error getting total price: " + e.getMessage());
+            logFail("Error getting total price: " + e.getMessage());
             return "";
         }
     }
@@ -201,15 +243,15 @@ public class CartPage extends BasePage {
                     if (priceText != null && priceText.contains("TL")) {
                         String numericPrice = priceText.replaceAll("[^0-9.,]", "").replace(",", ".");
                         double price = Double.parseDouble(numericPrice);
-                        System.out.println("Products total found: " + price + " TL");
+                        logInfo("Products total found: " + price + " TL");
                         return price;
                     }
                 }
             }
-            System.out.println("Products total element not found");
+            logWarning("Products total element not found");
             return 0.0;
         } catch (Exception e) {
-            System.out.println("Error getting products total: " + e.getMessage());
+            logFail("Error getting products total: " + e.getMessage());
             return 0.0;
         }
     }
@@ -226,15 +268,15 @@ public class CartPage extends BasePage {
                     if (priceText != null && priceText.contains("TL")) {
                         String numericPrice = priceText.replaceAll("[^0-9.,]", "").replace(",", ".");
                         double price = Double.parseDouble(numericPrice);
-                        System.out.println("Shipping total found: " + price + " TL");
+                        logInfo("Shipping total found: " + price + " TL");
                         return price;
                     }
                 }
             }
-            System.out.println("Shipping total element not found");
+            logWarning("Shipping total element not found");
             return 0.0;
         } catch (Exception e) {
-            System.out.println("Error getting shipping total: " + e.getMessage());
+            logFail("Error getting shipping total: " + e.getMessage());
             return 0.0;
         }
     }
@@ -248,15 +290,15 @@ public class CartPage extends BasePage {
                 if (discountText != null && discountText.contains("TL")) {
                     String numericDiscount = discountText.replaceAll("[^0-9.,]", "").replace(",", ".");
                     double discount = Double.parseDouble(numericDiscount);
-                    System.out.println("Shipping discount found: " + discount + " TL");
+                    logInfo("Shipping discount found: " + discount + " TL");
                     return discount;
                 }
             }
-            System.out.println("Shipping discount element not found");
+            logWarning("Shipping discount element not found");
             return 0.0;
         } catch (Exception e) {
             // Shipping discount element not found - this is normal for some orders
-            System.out.println("No shipping discount found (this is normal for some orders)");
+            logInfo("No shipping discount found (this is normal for some orders)");
             return 0.0;
         }
     }
@@ -274,14 +316,14 @@ public class CartPage extends BasePage {
                     // Remove the minus sign and "TL", then parse
                     String numericSavings = savingsText.replaceAll("[^0-9.,]", "").replace(",", ".");
                     double savings = Double.parseDouble(numericSavings);
-                    System.out.println("Total savings found: " + savings + " TL");
+                    logInfo("Total savings found: " + savings + " TL");
                     return savings;
                 }
             }
-            System.out.println("Total savings element not found");
+            logWarning("Total savings element not found");
             return 0.0;
         } catch (Exception e) {
-            System.out.println("Error getting total savings: " + e.getMessage());
+            logFail("Error getting total savings: " + e.getMessage());
             return 0.0;
         }
     }
@@ -295,14 +337,14 @@ public class CartPage extends BasePage {
                 if (title != null && title.contains("TL")) {
                     String numericTotal = title.replaceAll("[^0-9.,]", "").replace(",", ".");
                     double total = Double.parseDouble(numericTotal);
-                    System.out.println("Final total found: " + total + " TL");
+                    logInfo("Final total found: " + total + " TL");
                     return total;
                 }
             }
-            System.out.println("Final total element not found");
+            logWarning("Final total element not found");
             return 0.0;
         } catch (Exception e) {
-            System.out.println("Error getting final total: " + e.getMessage());
+            logFail("Error getting final total: " + e.getMessage());
             return 0.0;
         }
     }
@@ -316,16 +358,16 @@ public class CartPage extends BasePage {
             double finalTotal = getFinalTotal();
             double totalSavings = getTotalSavings();
             
-            System.out.println("=== Price Breakdown Verification ===");
-            System.out.println("Products Total: " + productsTotal + " TL");
-            System.out.println("Shipping Total: " + shippingTotal + " TL");
-            System.out.println("Shipping Discount: " + shippingDiscount + " TL");
-            System.out.println("Total Savings: " + totalSavings + " TL");
-            System.out.println("Final Total: " + finalTotal + " TL");
+            logInfo("=== Price Breakdown Verification ===");
+            logInfo("Products Total: " + productsTotal + " TL");
+            logInfo("Shipping Total: " + shippingTotal + " TL");
+            logInfo("Shipping Discount: " + shippingDiscount + " TL");
+            logInfo("Total Savings: " + totalSavings + " TL");
+            logInfo("Final Total: " + finalTotal + " TL");
             
             // If we can't get some values, use fallback verification
             if (productsTotal == 0.0 || finalTotal == 0.0) {
-                System.out.println("Some price elements not found, using fallback verification");
+                logWarning("Some price elements not found, using fallback verification");
                 // Just verify that we have some items and total
                 return true;
             }
@@ -333,16 +375,22 @@ public class CartPage extends BasePage {
             // Calculate expected final total considering savings
             // Final total should be: Products Total + Shipping - Total Savings
             double expectedFinalTotal = productsTotal + shippingTotal - totalSavings;
-            System.out.println("Expected Final Total: " + expectedFinalTotal + " TL");
+            logInfo("Expected Final Total: " + expectedFinalTotal + " TL");
             
             boolean match = Math.abs(finalTotal - expectedFinalTotal) < 0.01;
-            System.out.println("Price breakdown match: " + match);
+            logInfo("Price breakdown match: " + match);
+            
+            if (match) {
+                logPass("Price breakdown verification successful");
+            } else {
+                logWarning("Price breakdown verification failed");
+            }
             
             return match;
             
         } catch (Exception e) {
-            System.out.println("Error verifying price breakdown: " + e.getMessage());
-            System.out.println("Using fallback verification");
+            logFail("Error verifying price breakdown: " + e.getMessage());
+            logWarning("Using fallback verification");
             return true; // Don't fail the test if price breakdown can't be verified
         }
     }
@@ -357,12 +405,12 @@ public class CartPage extends BasePage {
                     String numericPrice = priceText.replaceAll("[^0-9.,]", "").replace(",", ".");
                     double price = Double.parseDouble(numericPrice);
                     total += price;
-                    System.out.println("Item " + (i + 1) + " price: " + priceText + " -> " + price);
+                    logInfo("Item " + (i + 1) + " price: " + priceText + " -> " + price);
                 }
             }
-            System.out.println("Calculated total from items: " + total);
+            logInfo("Calculated total from items: " + total);
         } catch (Exception e) {
-            System.out.println("Error calculating total from items: " + e.getMessage());
+            logFail("Error calculating total from items: " + e.getMessage());
         }
         return total;
     }
@@ -375,21 +423,21 @@ public class CartPage extends BasePage {
                 // Get item details before removal for verification
                 String itemName = getCartItemName(index);
                 String itemPrice = getCartItemPrice(index);
-                System.out.println("Removing item " + index + ": " + itemName + " (" + itemPrice + ")");
+                logInfo("Removing item " + index + ": " + itemName + " (" + itemPrice + ")");
                 
                 // Click remove button
                 removeButton.click();
-                System.out.println("Remove button clicked for item " + index);
+                logInfo("Remove button clicked for item " + index);
                 
                 // Wait for removal to complete
                 Thread.sleep(2000);
                 
-                System.out.println("Item " + index + " removed successfully");
+                logPass("Item " + index + " removed successfully");
             } else {
-                System.out.println("Invalid remove button index: " + index + ". Available buttons: " + removeItemButtons.size());
+                logWarning("Invalid remove button index: " + index + ". Available buttons: " + removeItemButtons.size());
             }
         } catch (Exception e) {
-            System.out.println("Error removing item from cart: " + e.getMessage());
+            logFail("Error removing item from cart: " + e.getMessage());
         }
     }
 
@@ -407,26 +455,32 @@ public class CartPage extends BasePage {
             waitForElementToBeVisible(cartItemPrices.get(0));
             
             String cartPrice = cartItemPrices.get(0).getText().trim();
-            System.out.println("Cart price: " + cartPrice);
-            System.out.println("Expected product price: " + expectedProductPrice);
+            logInfo("Cart price: " + cartPrice);
+            logInfo("Expected product price: " + expectedProductPrice);
             
             boolean priceMatch = cartPrice.equals(expectedProductPrice);
-            System.out.println("Price match: " + priceMatch);
+            logInfo("Price match: " + priceMatch);
+            
+            if (priceMatch) {
+                logPass("Cart price verification successful");
+            } else {
+                logFail("Cart price verification failed");
+            }
             
             return priceMatch;
         } catch (Exception e) {
-            System.out.println("Error verifying cart price: " + e.getMessage());
+            logFail("Error verifying cart price: " + e.getMessage());
             return false;
         }
     }
 
     public boolean verifyCartItemNameMatchesProductName(String expectedProductName) {
         try {
-            System.out.println("Looking for cart item names...");
+            logInfo("Looking for cart item names...");
             
             // Use the actual Trendyol HTML structure you found - SEPET SAYFASINDA
             List<WebElement> cartItemNameElements = driver.findElements(By.cssSelector("p.pb-item"));
-            System.out.println("Found " + cartItemNameElements.size() + " cart item name elements:");
+            logInfo("Found " + cartItemNameElements.size() + " cart item name elements:");
             
             // Look for the element that contains our product name
             WebElement productElement = null;
@@ -434,38 +488,44 @@ public class CartPage extends BasePage {
                 try {
                     String text = cartItemNameElements.get(i).getText().trim();
                     if (!text.isEmpty()) {
-                        System.out.println("Found product element " + i + ": '" + text.substring(0, Math.min(100, text.length())) + "...'");
+                        logInfo("Found product element " + i + ": '" + text.substring(0, Math.min(100, text.length())) + "...'");
                         productElement = cartItemNameElements.get(i);
                         break;
                     }
                 } catch (Exception e) {
-                    System.out.println("Element " + i + ": Could not get text");
+                    logWarning("Element " + i + ": Could not get text");
                 }
             }
             
             if (productElement == null) {
-                System.out.println("Could not find product element in cart");
+                logFail("Could not find product element in cart");
                 return false;
             }
             
             String cartItemName = productElement.getText().trim();
-            System.out.println("Cart item name: " + cartItemName.substring(0, Math.min(100, cartItemName.length())) + "...");
-            System.out.println("Expected product name: " + expectedProductName);
+            logInfo("Cart item name: " + cartItemName.substring(0, Math.min(100, cartItemName.length())) + "...");
+            logInfo("Expected product name: " + expectedProductName);
             
             // Clean and normalize both names for better matching
             String cleanCartName = normalizeProductName(cartItemName);
             String cleanExpectedName = normalizeProductName(expectedProductName);
             
-            System.out.println("Clean cart name: " + cleanCartName);
-            System.out.println("Clean expected name: " + cleanExpectedName);
+            logInfo("Clean cart name: " + cleanCartName);
+            logInfo("Clean expected name: " + cleanExpectedName);
             
             // Check if cart item name contains the expected product name (partial match)
             boolean nameMatch = cleanCartName.contains(cleanExpectedName) || cleanExpectedName.contains(cleanCartName);
-            System.out.println("Name match: " + nameMatch);
+            logInfo("Name match: " + nameMatch);
+            
+            if (nameMatch) {
+                logPass("Product name verification successful");
+            } else {
+                logFail("Product name verification failed");
+            }
             
             return nameMatch;
         } catch (Exception e) {
-            System.out.println("Error verifying cart item name: " + e.getMessage());
+            logFail("Error verifying cart item name: " + e.getMessage());
             return false;
         }
     }
